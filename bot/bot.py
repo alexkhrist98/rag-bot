@@ -16,5 +16,6 @@ class Bot:
         
         def _set_up_routes(self) -> None:
             self.dispatcher.include_router(bootstrap.start_router)
+            self.dispatcher.include_router(bootstrap.prompt_router)
 
         

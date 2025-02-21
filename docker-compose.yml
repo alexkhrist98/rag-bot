@@ -1,0 +1,10 @@
+services:
+  bot:
+    build: .
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - CHROMA_DIR=${CHROMA_DIR}
+      - DATA_DIR=${DATA_DIR}
+    volumes:
+      - ${CHROMA_DIR}:/app/${CHROMA_DIR}
+      - ${DATA_DIR}:/app/${DATA_DIR}

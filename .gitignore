@@ -1,7 +1,9 @@
 *.env
 *.pyc
-*.env
 .vscode*
 venv*
 *__pycache__*
 .env
+*ollama/*
+*chroma/*
+*data/*

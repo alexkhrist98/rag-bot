@@ -1,4 +1,10 @@
 services:
+  ollama-server:
+    container_name: ollama
+    image: ollama/ollama
+    volumes:
+      - ./ollama:/root/.ollama
+    restart: always
   bot:
     build: .
     environment:
@@ -8,3 +14,4 @@ services:
     volumes:
       - ${CHROMA_DIR}:/app/${CHROMA_DIR}
       - ${DATA_DIR}:/app/${DATA_DIR}
+    restart: unless-stopped

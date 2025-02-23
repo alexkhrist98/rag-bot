@@ -1,20 +1,18 @@
 import logging
-
 import os
 
 from langchain.schema import Document
-from langchain_community.llms.ollama import Ollama
+from langchain_gigachat import GigaChat
 
 from backend.database.chroma_service import ChromaService
 
 class PromptProcessor:
-    MODEL = os.getenv("MODEL", "smollm")
-    OLLAMA_BASE_URL = os.getenv("OLLAMA_URL", "http://ollama-server:11434")
+    GIGACHAT_ACCESS_KEY = os.getenv("GIGACHAT_AUTH_KEY") + "=="
     def __init__(self):
         self.database:ChromaService = ChromaService()
-        self.llm: Ollama = Ollama(
-            model=self.MODEL,
-            base_url=self.OLLAMA_BASE_URL
+        self.llm: GigaChat = GigaChat(
+            credentials=self.GIGACHAT_ACCESS_KEY,
+            verify_ssl_certs=False,
         )
     
     async def aprocess_prompt(self, text:str) -> str:

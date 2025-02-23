@@ -1,13 +1,14 @@
+import logging
+
 import os
 from typing import Callable
 
-from langchain.embeddings.ollama import OllamaEmbeddings
+from langchain_gigachat.embeddings import GigaChatEmbeddings
 
-OLLAMA_BASE_URL = os.getenv("OLLAMA_URL", "http://ollama-server:11434")
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "all-minilm")
-
+GIGACHAT_ACCESS_KEY = os.getenv("GIGACHAT_AUTH_KEY") + "=="
 def get_embedding_function() -> Callable:
-    return OllamaEmbeddings(
-        base_url=OLLAMA_BASE_URL,
-        model=EMBEDDING_MODEL,
+    return GigaChatEmbeddings(
+        credentials=GIGACHAT_ACCESS_KEY,
+        verify_ssl_certs=False,
+        scope="GIGACHAT_API_PERS"
     )

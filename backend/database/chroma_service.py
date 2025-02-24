@@ -16,7 +16,7 @@ class ChromaService:
         )
     
     async def aget_relevant(self, text:str) -> list[Document]:
-        return await self.db.asimilarity_search(text)
+        return await self.db.asimilarity_search_with_score(text, k=5)
     
     def add_chunks(self, chunks: list[Document], chunk_ids:list):
         return self.db.add_documents(

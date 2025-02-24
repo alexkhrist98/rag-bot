@@ -9,3 +9,4 @@ chroma/*
 data/*
 *chroma/*
 *data/*
+*chroma.sqlite3

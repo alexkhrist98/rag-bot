@@ -1,8 +1,9 @@
 import os
+import logging
 
 from langchain.schema import Document
 from langchain.document_loaders import PyPDFDirectoryLoader
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from backend.database.chroma_service import ChromaService
 
@@ -13,13 +14,19 @@ class IndexBuilder:
     def __init__(self):
         self.database: ChromaService = ChromaService()
         self.loader: PyPDFDirectoryLoader = PyPDFDirectoryLoader(self.DATA_DIR)
-        self.splitter: CharacterTextSplitter = CharacterTextSplitter()
+        self.splitter: RecursiveCharacterTextSplitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+            chunk_size=500
+        )
 
     def build_index(self) -> None:
         docs = self._prepare_docs()
         chunks = self._split_into_chunks(docs)
+        logging.debug(chunks)
         chunk_ids = self._create_chunk_ids(chunks)
-        self.database.add_chunks(chunks=chunks, chunk_ids=chunk_ids)
+        chunks_to_add = self._find_new_chunks(chunks, chunk_ids)
+        logging.debug(chunks_to_add)
+        if len(chunks_to_add) > 0:
+            self.database.add_chunks(chunks=chunks, chunk_ids=chunk_ids)
 
     def _prepare_docs(self) -> list[Document]:
         return self.loader.load()
@@ -27,7 +34,7 @@ class IndexBuilder:
     def _split_into_chunks(self, docs: list[Document]) -> list[Document]:
         return self.splitter.split_documents(docs)
 
-    def _create_chunk_ids(chunks: list[Document]) -> list[str]:
+    def _create_chunk_ids(self, chunks: list[Document]) -> list[str]:
         chunk_ids = []
         chunk_number = 0
         current_page = 1
@@ -38,6 +45,16 @@ class IndexBuilder:
                 chunk_number = 0
 
             chunk_id_string = f"{chunk_source}:{chunk_page}:{chunk_number}"
+            chunk.metadata["id"] = chunk_id_string
             chunk_ids.append(chunk_id_string)
 
         return chunk_ids
+    
+    def _find_new_chunks(self, chunks: list[Document], chunks_ids:list[str]) -> list[Document]:
+        stored_chunk_ids = set(self.database.get_stored_chunks())
+        chunk_ids_to_load = set(chunks_ids)
+        new_chunks = chunk_ids_to_load.difference(stored_chunk_ids)
+        return list(filter(
+            lambda chunk : chunk.metadata.get("id") in new_chunks,
+            chunks
+        ))

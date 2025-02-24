@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import types, Dispatcher
 from aiogram import Bot as AiogramBotr
 
@@ -12,6 +14,7 @@ class Bot:
         
         async def start(self) -> None:
               self._set_up_routes()
+              logging.info("Routes are ready. Starting bot!")
               await self.dispatcher.start_polling(self.bot, polling_timeout=100)
         
         def _set_up_routes(self) -> None:

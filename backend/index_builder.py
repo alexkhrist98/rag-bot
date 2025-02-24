@@ -21,10 +21,8 @@ class IndexBuilder:
     def build_index(self) -> None:
         docs = self._prepare_docs()
         chunks = self._split_into_chunks(docs)
-        logging.debug(chunks)
         chunk_ids = self._create_chunk_ids(chunks)
         chunks_to_add = self._find_new_chunks(chunks, chunk_ids)
-        logging.debug(chunks_to_add)
         if len(chunks_to_add) > 0:
             self.database.add_chunks(chunks=chunks, chunk_ids=chunk_ids)
 
@@ -37,16 +35,18 @@ class IndexBuilder:
     def _create_chunk_ids(self, chunks: list[Document]) -> list[str]:
         chunk_ids = []
         chunk_number = 0
-        current_page = 1
+        current_page = 0
         for chunk in chunks:
             chunk_page = chunk.metadata.get("page")
             chunk_source = chunk.metadata.get("source")
             if current_page != chunk_page:
                 chunk_number = 0
+                current_page += 1
 
             chunk_id_string = f"{chunk_source}:{chunk_page}:{chunk_number}"
             chunk.metadata["id"] = chunk_id_string
             chunk_ids.append(chunk_id_string)
+            chunk_number += 1
 
         return chunk_ids
     

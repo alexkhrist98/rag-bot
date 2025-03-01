@@ -22,9 +22,11 @@ class IndexBuilder:
         docs = self._prepare_docs()
         chunks = self._split_into_chunks(docs)
         chunk_ids = self._create_chunk_ids(chunks)
+        logging.info(f"Current number of documents: {len(docs)} containing {len(chunks)} chunks")
         chunks_to_add = self._find_new_chunks(chunks, chunk_ids)
         if len(chunks_to_add) > 0:
             self.database.add_chunks(chunks=chunks, chunk_ids=chunk_ids)
+        logging.info(f"Processed {len(chunks)}, added: {len(chunks_to_add)}")
 
     def _prepare_docs(self) -> list[Document]:
         return self.loader.load()
@@ -51,7 +53,8 @@ class IndexBuilder:
         return chunk_ids
     
     def _find_new_chunks(self, chunks: list[Document], chunks_ids:list[str]) -> list[Document]:
-        stored_chunk_ids = set(self.database.get_stored_chunks())
+        stored_chunks = self.database.get_stored_chunks()
+        stored_chunk_ids = set(stored_chunks["ids"])
         chunk_ids_to_load = set(chunks_ids)
         new_chunks = chunk_ids_to_load.difference(stored_chunk_ids)
         return list(filter(

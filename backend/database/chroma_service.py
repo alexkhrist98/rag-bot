@@ -24,5 +24,5 @@ class ChromaService:
             ids=chunk_ids,
         )
     
-    def get_stored_chunks(self) -> list[str]:
-        return self.db.get(include=[])
+    def get_stored_chunks(self) -> dict:
+        return self.db.get()

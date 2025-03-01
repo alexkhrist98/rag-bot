@@ -6,8 +6,10 @@ from backend.index_builder import IndexBuilder
 from bot.bot import Bot
 
 def main() -> None:
-    LOG_LEVEL = int(os.getenv("LOG_LEVEL", '0'))
-    logging.basicConfig(level=LOG_LEVEL)
+    DEBUG = os.getenv("DEBUG")
+    if DEBUG:
+        logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     API_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
     logging.info("Start building index")
     IndexBuilder().build_index()

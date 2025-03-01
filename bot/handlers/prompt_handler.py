@@ -9,7 +9,7 @@ prompt_router = Router()
 
 @prompt_router.message()
 async def msg_prompt(message:Message):
-    await message.answer("УШёл обрабатывать запрос, скоро вернусь с ответом)")
+    await message.answer("Ушёл обрабатывать запрос, скоро вернусь с ответом)")
     try:
         prompt_processor:PromptProcessor = PromptProcessor()
         result = await prompt_processor.aprocess_prompt(message.text)

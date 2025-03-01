@@ -15,7 +15,7 @@ class IndexBuilder:
         self.database: ChromaService = ChromaService()
         self.loader: PyPDFDirectoryLoader = PyPDFDirectoryLoader(self.DATA_DIR)
         self.splitter: RecursiveCharacterTextSplitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-            chunk_size=500
+            chunk_size=450
         )
 
     def build_index(self) -> None:
@@ -25,7 +25,8 @@ class IndexBuilder:
         logging.info(f"Current number of documents: {len(docs)} containing {len(chunks)} chunks")
         chunks_to_add = self._find_new_chunks(chunks, chunk_ids)
         if len(chunks_to_add) > 0:
-            self.database.add_chunks(chunks=chunks, chunk_ids=chunk_ids)
+            for portion_chunks, portion_ids in zip(self._chunk_iterator(chunks, 25), self._chunk_iterator(chunk_ids, 25)):
+                self.database.add_chunks(chunks=portion_chunks, chunk_ids=portion_ids)
         logging.info(f"Processed {len(chunks)}, added: {len(chunks_to_add)}")
 
     def _prepare_docs(self) -> list[Document]:
@@ -52,6 +53,10 @@ class IndexBuilder:
 
         return chunk_ids
     
+    def _chunk_iterator(self, lst: list, chunk_size: int):
+        for i in range(0, len(lst), chunk_size):
+            yield lst[i:i + chunk_size]
+
     def _find_new_chunks(self, chunks: list[Document], chunks_ids:list[str]) -> list[Document]:
         stored_chunks = self.database.get_stored_chunks()
         stored_chunk_ids = set(stored_chunks["ids"])

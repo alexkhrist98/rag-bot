@@ -8,6 +8,7 @@ services:
       - GIGACHAT_CLIENT_ID=${GIGACHAT_CLIENT_ID}
       - GIGACHAT_CLIENT_SECRET=${GIGACHAT_CLIENT_SECRET}
       - DEBUG=${DEBUG}
+      - BUILD_INDEX=${BUILD_INDEX}
     volumes:
       - ${CHROMA_DIR}:/app/${CHROMA_DIR}
       - ${DATA_DIR}:/app/${DATA_DIR}

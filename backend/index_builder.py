@@ -44,7 +44,7 @@ class IndexBuilder:
             chunk_source = chunk.metadata.get("source")
             if current_page != chunk_page:
                 chunk_number = 0
-                current_page += 1
+                current_page = chunk_page
 
             chunk_id_string = f"{chunk_source}:{chunk_page}:{chunk_number}"
             chunk.metadata["id"] = chunk_id_string

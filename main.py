@@ -12,7 +12,9 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO)
     API_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
     logging.info("Start building index")
-    IndexBuilder().build_index()
+    BUILD_INDEX = os.getenv("BUILD_INDEX", None)
+    if bool(BUILD_INDEX):
+        IndexBuilder().build_index()
     logging.info("Index complete")
     logging.info("Starting bot")
     bot:Bot = Bot(API_TOKEN)

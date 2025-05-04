@@ -11,7 +11,11 @@ def get_embedding_function() -> Callable:
         scope="GIGACHAT_API_PERS"
     )
 
-def get_base64_credentials(client_id:str, client_secret:str) -> str:
+def get_base64_credentials(client_id:str = '', client_secret:str = '') -> str:
+    if client_id == '':
+        client_id = os.getenv('GIGACHAT_CLIENT_ID')
+    if client_secret == '':
+        client_secret = os.getenv('GIGACHAT_CLIENT_SECRET')
     pair_bytes = f"{client_id}:{client_secret}".encode("utf-8")
     return base64.b64encode(pair_bytes).decode("utf-8")
 #some sunny day I'll move this to a config object
